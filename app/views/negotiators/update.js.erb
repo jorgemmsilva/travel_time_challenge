@@ -1,0 +1,5 @@
+//close form modal
+$('#myModal').modal('hide');
+
+// refresh sidebar
+$('#sidebar').html("<%= j render 'negotiators/sidebar', negotiators: @negotiators %>");

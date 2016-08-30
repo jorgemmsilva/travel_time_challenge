@@ -1,0 +1,46 @@
+<p id="notice"><%= notice %></p>
+
+<div class="text-center" style="padding-bottom:30px;">
+  <h2>Negotiators</h2>
+</div>
+
+
+<ul class="nav nav-sidebar">
+  <% negotiators.each do |negotiator| %>
+    <li class="negotiator col-sm-12">
+
+        <a class="negotiator_name col-sm-6" data-negotiator="<%= negotiator.id %>">
+          <%= negotiator.name %>
+        </a>
+
+        <%= link_to routes_path(route: {negotiator_id: negotiator.id}), method: :post , remote: true, class:" glyphicon glyphicon-plus col-sm-2" do %>
+        <% end %>
+
+        <%= link_to edit_negotiator_path(negotiator), remote: true, class:" glyphicon glyphicon-edit col-sm-2" do %>
+        <% end %>
+
+        <%= link_to negotiator, remote: true , method: :delete, data: { confirm: 'Are you sure?' } , class:" glyphicon glyphicon-remove col-sm-2"  do %>
+        <% end %>
+
+    </li>
+    
+    <%= render "routes/list", routes: negotiator.routes.by_date %>
+
+  <% end %>
+</ul>
+
+<%= link_to new_negotiator_path , class:"col-sm-12", style:"text-align: center; padding-top: 50px;", remote: true do %>
+  <span class="glyphicon glyphicon-plus" data-toggle="tooltip" title="New Negotiator" class="tooltip" ></span>
+<% end %>
+
+
+<script type="text/javascript">
+  $(document).ready(function(){
+
+    $('.negotiator_name').on('click', function(e){
+      $('.route_list[data-negotiator="'+ $(e.target).data('negotiator') +'"]').toggle();
+    });
+
+
+  })
+</script>

@@ -1,0 +1,5 @@
+$('#myModal .modal-title').text('Create Negotiator');
+
+$('#myModal .modal-body').html("<%= j render 'form', negotiator: @negotiator %>");
+
+$('#myModal').modal('show');

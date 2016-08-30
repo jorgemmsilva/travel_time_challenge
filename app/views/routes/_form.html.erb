@@ -1,0 +1,234 @@
+<%= form_for(route, format: :js, remote: true) do |f| %>
+  
+  <h2>
+    Route 
+  </h2>
+
+  <h4>Estimated duration: <%= route.duration %> minutes</h4>
+
+  <div class="form-group">
+    <label for="datepicker">Date:</label>
+    <input class="datepicker" id="datepicker"></input>
+    <!-- value="<%= route.date.to_date %>" -->
+  </div>
+
+
+  <div class="form-group">
+    <label for="timepicker">Time:</label>
+    <input class="timepicker" id="timepicker"></input>
+    <!-- <%=  route.date.strftime('%I:%M:%S %p') %> -->
+  </div>
+
+  <input class="route-date-input" name="date" hidden>
+
+  
+  <div class="form-group">
+
+  <div class="list-group sortable points-list">
+    <% route.points.each_with_index do |point,index| %>
+      <%= render "points/show", point: point, index: index %>
+    <% end %>
+  </div>
+
+    <% if route.errors.any? %>
+      <div id="error_explanation">
+        <h2><%= pluralize(route.errors.count, "error") %> prohibited this route from being saved:</h2>
+
+        <ul>
+        <% route.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+  </div>
+
+  <div class="actions">
+    <%= button_tag "Update Route", type:"submit", class:"btn btn-default", 'data-disable-with' => "<i class='fa fa-spinner fa-spin'></i> Updating...".html_safe %>
+
+    <%= link_to  "Delete Route", route_path(@route), method: :delete , class:"btn btn-default", remote: true %>
+  </div>
+<% end %>
+
+
+<script type="text/javascript">
+    var routePath;
+
+  $(document).ready(function(){
+
+
+    $('.datepicker').pickadate({
+      onStart: function() {
+        this.set('select', new Date(<%= @route.date.year %>, <%= @route.date.month - 1 %> , <%= @route.date.day %> ))
+      }
+    });
+
+    $('.timepicker').pickatime({
+        onStart: function(){
+            this.set('select', [<%= @route.date.hour %>,<%= @route.date.min %>])
+        }
+    });
+
+    refreshMarkers();
+
+    drawPath();
+
+    refreshPointEvents();
+
+
+
+    //before form submit
+    $('#route_form').submit(function() {
+
+      //get the date from the pickers
+      $('.route-date-input').val( $('#datepicker').val() + ' ' +$('#timepicker').val());
+
+
+      // fill the hidden inputs for points
+      $.each($('.point'),function(index, elem){
+        // point-name-input
+        
+        // point-lat-input
+        // point-lon-input
+
+        // point-duration-input
+        // point-position-input
+
+        var visit_dur = $(elem).find($('.point-visit-duration')).text();
+        var position = index;
+        var name = $(elem).find($('.point-name')).text();
+
+        $(elem).find($('.point-name-input')).val(name);
+        $(elem).find($('.point-duration-input')).val(visit_dur);
+        $(elem).find($('.point-position-input')).val(position);
+
+
+      })
+
+    });
+
+  })
+
+  function refreshMarkers(){
+    //remove existing markers from the map
+    for (var i = 0; i < markers.length; i++) {
+      markers[i].setMap(null);
+    }
+    markers = [];
+
+    //draw route points in the map
+
+    var points = $('.point');
+    var points_lat = $('.point > .point-lat-input');
+    var points_lon = $('.point > .point-lon-input');
+
+
+    $.each(points, function(index,elem){
+
+      var location = {lat: Number(points_lat[index].getAttribute("value")), lng: Number(points_lon[index].getAttribute("value"))};
+
+      var marker = new google.maps.Marker({
+        position: location, 
+        map: map
+      });
+
+      markers.push(marker);
+
+      elem.setAttribute('data-marker-index', index);
+    })
+
+  }
+
+
+  function drawPath(){
+    
+    if (routePath != undefined){
+      routePath.setMap(null);
+    }
+
+    var locations = [];
+    for (var i = 0; i < markers.length; i++) {
+      locations.push(markers[i].position);
+    }
+
+    //draw polyline between points
+    routePath = new google.maps.Polyline({
+          path: locations,
+          geodesic: true,
+          strokeColor: '#FF0000',
+          strokeOpacity: 1.0,
+          strokeWeight: 2
+        });
+
+    routePath.setMap(map);
+    //para depois melhorar 
+    //http://stackoverflow.com/questions/14556312/google-maps-v3-create-routes-between-two-points
+  }
+
+
+  function refreshPointEvents(){
+    //enable points to be sorted
+    sortable('.sortable')[0].addEventListener('sortstop', function(e) {
+      refreshMarkers();
+      drawPath();
+    });
+
+    $('.remove-point').unbind();
+    $('.point').unbind();
+
+    //animate points on editing
+    $('.point').on('click',function(e){
+      e.preventDefault();
+      e.stopPropagation();
+
+      var marker_index = event.currentTarget.getAttribute('data-marker-index');
+
+      //make all points stop bouncing
+      for (var i = 0; i < markers.length; i++) {
+        markers[i].setAnimation(google.maps.Animation.NONE); 
+      }
+
+      //add bounce animation to the clicked point
+      markers[marker_index].setAnimation(google.maps.Animation.BOUNCE);
+
+      map.panTo(markers[marker_index].position);
+    });
+
+    //enable remove button to remove point
+    $('.remove-point').on('click',function(e){
+      e.preventDefault();
+
+      //get point
+      var point_div = $(e.currentTarget).parent().parent();
+      var marker_idx = point_div.data('marker-index');
+
+      //remove from markers
+      markers[marker_idx].setMap(null);
+      markers.splice(marker_idx, 1);
+      
+
+      //redraw
+      drawPath();
+
+      //remove point div
+      point_div.remove();
+
+
+      //update markers index on points div
+      var points =  $('.point');
+
+      $.each(points, function(index, point){
+        var idx = point.getAttribute('data-marker-index');
+
+        if(idx > marker_idx){
+          point.setAttribute('data-marker-index', idx - 1);
+        }
+      });
+
+
+    });
+  }
+
+</script>
+

@@ -1,0 +1,24 @@
+//TODO ADD ACTIVE TO THE SELECTED ROUTE li
+
+//open space for the right sidebar
+// $('.main').switchClass( "col-sm-10", "col-sm-8", 1000, "easeInOutQuad" );
+// $('.main').switchClass( "col-md-10", "col-md-8", 1000, "easeInOutQuad" );
+var mainDiv = $('.main');
+
+mainDiv.removeClass('col-sm-10');
+mainDiv.removeClass('col-md-10');
+mainDiv.addClass('col-sm-8');
+mainDiv.addClass('col-md-8');
+
+
+
+
+
+//show route form (change date)
+$('#route_form').html("<%= j render 'sidebar', route: @route %>");
+
+
+//update map with route points
+
+
+//show points form

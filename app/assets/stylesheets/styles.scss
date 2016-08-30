@@ -1,0 +1,44 @@
+
+
+.negotiator:hover {
+    cursor: pointer;
+}
+
+.negotiator{
+    width: 100%;
+    display: inline-block;
+    padding-right:0px !important;
+    padding-left:0px !important;
+}
+
+.negotiator > a{
+    float:left;
+}
+
+
+.sidebar-right {
+  float: right !important;
+}
+
+#floating-panel {
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    z-index: 5;
+    background-color: rgba(255,255,255,.5);
+    padding: 5px;
+    text-align: center;
+    line-height: 30px;
+    padding-left: 10px;
+}
+
+.sortable-placeholder {
+  border: 1px dashed #CCC;
+  background-color: #f9f9f9;
+  height: 80px;
+  margin-bottom: 10px;
+}
+
+.sortable {
+  display: list-item;
+}

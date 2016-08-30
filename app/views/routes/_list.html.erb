@@ -1,0 +1,9 @@
+<% routes.each_with_index do |route, index| %>
+    <div class="route_list" data-negotiator="<%= route.negotiator_id %>" >
+
+        <%= link_to edit_route_path(route), remote: true do %>
+            <%= time_tag route.date%>
+        <% end %>
+
+    </div>
+<% end %>

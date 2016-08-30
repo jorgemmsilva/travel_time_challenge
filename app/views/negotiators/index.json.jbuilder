@@ -1,0 +1,1 @@
+json.array! @negotiators, partial: 'negotiators/negotiator', as: :negotiator

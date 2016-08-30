@@ -1,0 +1,24 @@
+<div class="list-group-item point" data-id="<%= point.id %>" data-marker-index="<%= index %>">
+
+    <a href="">
+    <span class="glyphicon glyphicon-remove remove-point" data-toggle="tooltip" title="remove point" class="tooltip" style="float:right"></span>
+    </a>
+
+    <h4 class="point-name" contenteditable="true"><%= point.name %></h4>
+
+    <h5><small>Arrival time:</small> <%= point.arrival_time.nil? ? "" : "#{point.arrival_time.strftime("%I:%M%p")}" %></h5>
+
+    <h6><small> <%= point.lat + " , " + point.lon %> </small> </h6>
+
+    <h6>
+        <span contenteditable="true" class="point-visit-duration"><%= point.visit_duration %></span> mins
+        <small>visit duration</small>
+    </h6>
+
+    <input class="point-name-input" name="points[<%= point.id %>][name]" value="" hidden>
+    <input class="point-lat-input" name="points[<%= point.id %>][lat]" value="<%= point.lat %>" hidden>
+    <input class="point-lon-input" name="points[<%= point.id %>][lon]" value="<%= point.lon %>" hidden>
+    <input class="point-duration-input" name="points[<%= point.id %>][duration]" value="" hidden>
+    <input class="point-position-input" name="points[<%= point.id %>][position]" value="" hidden>
+
+</div>
