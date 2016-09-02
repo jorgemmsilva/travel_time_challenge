@@ -1,7 +1,7 @@
 <%= form_for(route, format: :js, remote: true) do |f| %>
-  
+
   <h2>
-    Route 
+    Route
   </h2>
 
   <h4>Estimated duration: <%= route.duration %> minutes</h4>
@@ -21,7 +21,6 @@
 
   <input class="route-date-input" name="date" hidden>
 
-  
   <div class="form-group">
 
   <div class="list-group sortable points-list">
@@ -88,7 +87,7 @@
       // fill the hidden inputs for points
       $.each($('.point'),function(index, elem){
         // point-name-input
-        
+
         // point-lat-input
         // point-lon-input
 
@@ -129,7 +128,7 @@
       var location = {lat: Number(points_lat[index].getAttribute("value")), lng: Number(points_lon[index].getAttribute("value"))};
 
       var marker = new google.maps.Marker({
-        position: location, 
+        position: location,
         map: map
       });
 
@@ -142,7 +141,7 @@
 
 
   function drawPath(){
-    
+
     if (routePath != undefined){
       routePath.setMap(null);
     }
@@ -162,8 +161,6 @@
         });
 
     routePath.setMap(map);
-    //para depois melhorar 
-    //http://stackoverflow.com/questions/14556312/google-maps-v3-create-routes-between-two-points
   }
 
 
@@ -186,7 +183,7 @@
 
       //make all points stop bouncing
       for (var i = 0; i < markers.length; i++) {
-        markers[i].setAnimation(google.maps.Animation.NONE); 
+        markers[i].setAnimation(google.maps.Animation.NONE);
       }
 
       //add bounce animation to the clicked point
@@ -206,7 +203,7 @@
       //remove from markers
       markers[marker_idx].setMap(null);
       markers.splice(marker_idx, 1);
-      
+
 
       //redraw
       drawPath();
@@ -231,4 +228,3 @@
   }
 
 </script>
-

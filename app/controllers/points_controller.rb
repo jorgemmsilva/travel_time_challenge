@@ -1,6 +1,14 @@
 class PointsController < ApplicationController
     before_action :set_point, only: [:show, :edit, :update, :destroy]
 
+    def getProperties
+        p = Properties.new
+        properties = p.getProperties(params[:lat],params[:lng])
+
+        respond_to do |format|
+            format.json {render json: properties}
+        end
+    end
 
     def show
     end

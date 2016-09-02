@@ -40,7 +40,7 @@ ActiveRecord::Schema.define(version: 20160830110407) do
     t.integer  "negotiator_id"
     t.datetime "created_at",                                    null: false
     t.datetime "updated_at",                                    null: false
-    t.datetime "date",          default: '2016-08-29 23:00:00'
+    t.datetime "date",          default: '2016-09-01 23:00:00'
     t.integer  "duration",      default: 0
     t.index ["negotiator_id"], name: "index_routes_on_negotiator_id", using: :btree
   end

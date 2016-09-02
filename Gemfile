@@ -48,3 +48,12 @@ gem 'jquery-rails'
 
 #pickadate.js
 gem 'pickadate-rails'
+
+
+# rspec
+gem 'rspec'
+gem 'rspec-rails'
+
+#vcr
+gem 'vcr'
+gem 'fakeweb'

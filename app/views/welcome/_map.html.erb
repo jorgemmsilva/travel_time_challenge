@@ -4,102 +4,116 @@
 
 <script>
 
-	var map = window.map;
-	var markers = window.markers = [];
-	var created_markers_counter = 0;
+  var map = window.map;
+  var markers = window.markers = [];
+  var created_markers_counter = 0;
 
-	function initMap() {
-		map = window.map = new google.maps.Map(document.getElementById('map'), {
-			zoom: 15,
-			center: {lat: 51.519984, lng: -0.098404 }
-		});
-
-
-		//register handler for when the map is clicked	
-		google.maps.event.addListener(map, 'click', function(event) {
-			if(!isEmpty($('#route_form'))){
-				placeMarker(event.latLng);
-			}
-		});
-
-      	// Adds a marker to the map and push to the array.
-		function placeMarker(location) {
-			var marker = new google.maps.Marker({
-				position: location, 
-				map: map
-			});
-			markers.push(marker);
-
-	      	addNewPointToRoute(location,marker);
-		}
-	}
-
-	function addNewPointToRoute(location, marker){
-		created_markers_counter++;
-
-		var html = '<div class="list-group-item point" data-id="new'+created_markers_counter+'" data-marker-index="'+ (markers.length - 1) +'" >'+
-						'<a href="">'+
-						'<span class="glyphicon glyphicon-remove remove-point" data-toggle="tooltip" title="remove point" class="tooltip" style="float:right"></span>'+
-						'</a>'+
-					    '<h4 class="point-name" contenteditable="true">Point</h4>'+
-    					'<h6><small> '+ location.lat() +' , '+ location.lng() +' </small> </h6>'+
-					    '<h6>'+
-					        '<span contenteditable="true" class="point-visit-duration">0</span> mins'+
-					        '<small>visit duration</small>'+
-					    '</h6>'+
-					    '<input class="point-name-input" name="points[new'+created_markers_counter+'][name]" value="" hidden>'+
-					    '<input class="point-lat-input" name="points[new'+created_markers_counter+'][lat]" value="'+ location.lat() +'" hidden>'+
-					   	'<input class="point-lon-input" name="points[new'+created_markers_counter+'][lon]" value="'+ location.lng() +'" hidden>'+
-					    '<input class="point-duration-input" name="points[new'+created_markers_counter+'][duration]" value="" hidden>'+
-					    '<input class="point-position-input" name="points[new'+created_markers_counter+'][position]" value="" hidden>'+
-					'</div>';
-
-		$('.points-list').append(html);
-
-		//re render path with the new point
-		drawPath();
-
-		//refresh click/sortable events for points
-		refreshPointEvents();
-
-	}
+  function initMap() {
+    map = window.map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 15,
+      center: {lat: 51.519984, lng: -0.098404 }
+    });
 
 
- 	// Sets the map on all markers in the array.
-	function setMapOnAll(map) {
-		for (var i = 0; i < markers.length; i++) {
-			markers[i].setMap(map);
-		}
-	}
+    //register handler for when the map is clicked
+    google.maps.event.addListener(map, 'click', function(event) {
+      if(!isEmpty($('#route_form'))){
+        placeMarker(event.latLng);
+      }
 
-	// Removes the markers from the map, but keeps them in the array.
-	function clearMarkers() {
-		setMapOnAll(null);
-	}
+      //gather properties nearby the marker
+      $.ajax({
+        url: "<%= getproperties_url %>.json",
+        data: {lat: event.latLng.lat,
+              lng: event.latLng.lng
+              },
+        success: success,
+      });
 
-	// Shows any markers currently in the array.
-	function showMarkers() {
-		setMapOnAll(map);
-	}
+      function success(res){
+        var prop = res.properties[0];
+        $('.route-suggestions').html('<div> <h6> '+ prop.address +' <small>' + prop.lat + ',' + prop.lng + '</small></h6><span> rent: '+prop.rent+'</span></div>')
+      }
+    });
 
-	// Deletes all markers in the array by removing references to them.
-	function deleteMarkers() {
-		clearMarkers();
-		markers = [];
-	}
+        // Adds a marker to the map and push to the array.
+    function placeMarker(location) {
+      var marker = new google.maps.Marker({
+        position: location,
+        map: map
+      });
+      markers.push(marker);
 
-	function toggleSatteliteView(){
-		if(map.mapTypeId === "roadmap"){
-			map.setMapTypeId(google.maps.MapTypeId.SATELLITE);	
-		} else {
-			map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
-		}
-	}
+          addNewPointToRoute(location,marker);
+    }
+  }
 
-	//checks wether an html element is empty
-	function isEmpty( el ){
-		return !$.trim(el.html())
-	}
+  function addNewPointToRoute(location, marker){
+    created_markers_counter++;
+
+    var html = '<div class="list-group-item point" data-id="new'+created_markers_counter+'" data-marker-index="'+ (markers.length - 1) +'" >'+
+            '<a href="">'+
+            '<span class="glyphicon glyphicon-remove remove-point" data-toggle="tooltip" title="remove point" class="tooltip" style="float:right"></span>'+
+            '</a>'+
+              '<h4 class="point-name" contenteditable="true">Point</h4>'+
+              '<h6><small> '+ location.lat() +' , '+ location.lng() +' </small> </h6>'+
+              '<h6>'+
+                  '<span contenteditable="true" class="point-visit-duration">0</span> mins'+
+                  '<small>visit duration</small>'+
+              '</h6>'+
+              '<input class="point-name-input" name="points[new'+created_markers_counter+'][name]" value="" hidden>'+
+              '<input class="point-lat-input" name="points[new'+created_markers_counter+'][lat]" value="'+ location.lat() +'" hidden>'+
+               '<input class="point-lon-input" name="points[new'+created_markers_counter+'][lon]" value="'+ location.lng() +'" hidden>'+
+              '<input class="point-duration-input" name="points[new'+created_markers_counter+'][duration]" value="" hidden>'+
+              '<input class="point-position-input" name="points[new'+created_markers_counter+'][position]" value="" hidden>'+
+          '</div>';
+
+    $('.points-list').append(html);
+
+    //re render path with the new point
+    drawPath();
+
+    //refresh click/sortable events for points
+    refreshPointEvents();
+
+  }
+
+
+   // Sets the map on all markers in the array.
+  function setMapOnAll(map) {
+    for (var i = 0; i < markers.length; i++) {
+      markers[i].setMap(map);
+    }
+  }
+
+  // Removes the markers from the map, but keeps them in the array.
+  function clearMarkers() {
+    setMapOnAll(null);
+  }
+
+  // Shows any markers currently in the array.
+  function showMarkers() {
+    setMapOnAll(map);
+  }
+
+  // Deletes all markers in the array by removing references to them.
+  function deleteMarkers() {
+    clearMarkers();
+    markers = [];
+  }
+
+  function toggleSatteliteView(){
+    if(map.mapTypeId === "roadmap"){
+      map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+    } else {
+      map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+    }
+  }
+
+  //checks wether an html element is empty
+  function isEmpty( el ){
+    return !$.trim(el.html())
+  }
 
 
 </script>

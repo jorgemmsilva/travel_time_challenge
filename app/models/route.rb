@@ -1,11 +1,11 @@
 class Route < ApplicationRecord
-	has_many :points, -> { order(position: :asc) }, dependent: :destroy
+    has_many :points, -> { order(position: :asc) }, dependent: :destroy
     scope :by_date, -> { order(:date) }
 
-	# When a trip is created, populate it automatically with the first point on the rentify office
-	after_create do
-		self.points << Point.create(lat:"51.519984", lon:"-0.098404", name: "Rentify" )
-	end
+    # When a trip is created, populate it automatically with the first point on the rentify office
+    after_create do
+        self.points << Point.create(lat:"51.519984", lon:"-0.098404", name: "Rentify" )
+    end
 
 
     def updateDuration
@@ -19,12 +19,11 @@ class Route < ApplicationRecord
                     point_b = p
 
                     uri = URI("https://developer.citymapper.com/api/1/traveltime/?"+
-                            "key=" + ENV["CITYMAPPER_API_KEY"] + 
+                            "key=" + ENV["CITYMAPPER_API_KEY"] +
                             "&startcoord=#{point_a.lat},#{point_a.lon}"+
                             "&endcoord=#{point_b.lat},#{point_b.lon}"+
                             "&time=#{date.year}-#{date.month}-#{date.day}T#{date.hour}:#{date.min}:00Z"+
                             "&time_type=arrival")
-
 
                     Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
                         request = Net::HTTP::Get.new uri

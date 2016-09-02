@@ -11,11 +11,12 @@ module Untitled
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
-    
+
     config.serve_static_assets = true
 
-    if ENV['RAILS_ENV'].to_s == 'development' || ENV['RAILS_ENV'].to_s == ''
+    if ENV['RAILS_ENV'].to_s == 'development' || ENV['RAILS_ENV'].to_s == '' || ENV['RAILS_ENV'].to_s == 'test'
         OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
     end
+    config.autoload_paths += %W(#{config.root}/lib)
   end
 end
